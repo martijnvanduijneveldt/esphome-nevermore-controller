@@ -2,14 +2,14 @@ import asyncio
 import threading
 from .nevermore_esp_client import NevermoreEspClient
 from .nevermore_log_adapter import NevermoreLogAdapter
+from .models.NevermoreEspClientParams import NevermoreEspClientParams
 
 class NevermoreEspClientThread:
-    def __init__(self, logger: NevermoreLogAdapter, hostname: str):
+    def __init__(self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams):
         self.logger = logger
-        self.hostname = hostname
         self.thread = threading.Thread(target=self._init_thread, args=(), daemon=True)
         self._disconnect = asyncio.Event()
-        self.client = NevermoreEspClient(self.logger, self.hostname)
+        self.client = NevermoreEspClient(self.logger, client_params)
 
     def start(self):
         self.logger.debug("Background thread started")
