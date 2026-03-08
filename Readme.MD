@@ -11,7 +11,8 @@
 - [x] Automatic reconnect 
 - [x] Fan speed reporting
 - [x] Fan speed control
-- [x] Sensors values reporting
+- [x] Sensors values reporting as nevermore fan
+- [ ] Sensors values reporting as individual temps (for temp/voc plotting on graph)
 - [ ] Servo control
 
 ## Config
