@@ -8,7 +8,8 @@
 - Code that is easy to understand
 
 ## Working / planned features
-- [x] Automatic reconnect 
+- [x] Automatic reconnect
+- [x] Clear nevermore displayed values on connection loss
 - [x] Fan speed reporting
 - [x] Fan speed control
 - [x] Sensors values reporting as nevermore fan
