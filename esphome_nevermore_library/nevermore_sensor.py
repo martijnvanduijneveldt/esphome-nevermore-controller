@@ -1,9 +1,10 @@
-from typing import Dict
+from typing import Callable, Dict, Optional
+
+from klippy import Printer
 
 from .nevermore_esp_client import NevermoreEspClient
-from klippy import Printer
-from typing import Callable, Optional
 from .nevermore_log_adapter import NevermoreLogAdapter
+
 
 class NevermoreSensor:
     def __init__(self, logger: NevermoreLogAdapter, printer: Printer, name:str, client:NevermoreEspClient) -> None:

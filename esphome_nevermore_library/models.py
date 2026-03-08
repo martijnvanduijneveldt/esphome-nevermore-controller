@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, TypedDict
+from typing import Optional
+
 
 @dataclass
 class NevermoreEspClientObjectIdMapping(object):
@@ -13,7 +14,6 @@ class NevermoreEspClientObjectIdMapping(object):
     exhaust_temperature: str
     exhaust_pressure: str
     exhaust_gas: str
-
 
 @dataclass
 class NevermoreEspClientParams:

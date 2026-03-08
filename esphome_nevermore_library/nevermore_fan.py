@@ -1,8 +1,9 @@
 from typing import Dict
 
-from .nevermore_esp_client import NevermoreEspClient
-from klippy import Printer
 from gcode import GCodeCommand, GCodeDispatch
+from klippy import Printer
+
+from .nevermore_esp_client import NevermoreEspClient
 
 
 class NevermoreFan:

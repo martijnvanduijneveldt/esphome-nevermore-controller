@@ -1,8 +1,10 @@
 import asyncio
 import threading
+
+from .models import NevermoreEspClientParams
 from .nevermore_esp_client import NevermoreEspClient
 from .nevermore_log_adapter import NevermoreLogAdapter
-from .models.NevermoreEspClientParams import NevermoreEspClientParams
+
 
 class NevermoreEspClientThread:
     def __init__(self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams):

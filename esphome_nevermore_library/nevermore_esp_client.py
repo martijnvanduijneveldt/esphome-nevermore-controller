@@ -1,15 +1,16 @@
-from .nevermore_log_adapter import NevermoreLogAdapter
 from collections.abc import Callable
-from typing import Dict, Any
-from .models.NevermoreEspClientParams import NevermoreEspClientParams
+from typing import Any, Dict
 
 from aioesphomeapi import (
     APIClient,
     APIConnectionError,
-    ReconnectLogic,
+    EntityInfo,
     EntityState,
-    EntityInfo
+    ReconnectLogic,
 )
+
+from .models import NevermoreEspClientParams
+from .nevermore_log_adapter import NevermoreLogAdapter
 
 
 class NevermoreEspClient:
@@ -20,7 +21,9 @@ class NevermoreEspClient:
 
     _fan_speed_key: int = None
 
-    def __init__(self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams):
+    def __init__(
+        self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams
+    ):
         # Initialize variables
         self.client_params = client_params
         self.logger = logger
@@ -36,12 +39,12 @@ class NevermoreEspClient:
             self.logger.error("Failed to set fan speed", exc_info=e)
 
     def on_fan_rpm_update(self, callback: Callable[[float], None]):
-        self._on_event("fan_rpm", lambda object_id, value : callback(value))
+        self._on_event("fan_rpm", lambda object_id, value: callback(value))
 
     def on_fan_speed_update(self, callback: Callable[[int], None]):
-        self._on_event("fan_speed", lambda object_id, value : callback(value))
+        self._on_event("fan_speed", lambda object_id, value: callback(value))
 
-    def on_temp_sensor_update(self, callback: Callable[[str,float], None]):
+    def on_temp_sensor_update(self, callback: Callable[[str, float], None]):
         self._on_event("intake_humidity", callback)
         self._on_event("exhaust_humidity", callback)
         self._on_event("intake_temperature", callback)
@@ -72,16 +75,13 @@ class NevermoreEspClient:
 
     @staticmethod
     def _get_entity_key(entity_infos: list[EntityInfo], object_id: str) -> int:
-        return next(
-            (x for x in entity_infos if x.object_id == object_id), None
-        ).key
+        return next((x for x in entity_infos if x.object_id == object_id), None).key
 
-    def on_connect(self, callback:Callable[[], None]):
+    def on_connect(self, callback: Callable[[], None]):
         self.connect_callbacks.append(callback)
 
-    def on_disconnect(self, callback:Callable[[], None]):
+    def on_disconnect(self, callback: Callable[[], None]):
         self.disconnect_callbacks.append(callback)
-
 
     async def _on_connect(self) -> None:
         self.logger.info("Connected to esp")
@@ -98,20 +98,30 @@ class NevermoreEspClient:
                     (x for x in entity_infos if x.object_id == object_id), None
                 )
                 if entity is None:
-                    self.logger.warning(f"Unable to find object '{object_id}' for '{object_name}'")
+                    self.logger.warning(
+                        f"Unable to find object '{object_id}' for '{object_name}'"
+                    )
                 else:
                     if object_name == object_id:
-                        self.logger.debug(f"Found object '{object_id}' with key {entity.key}")
+                        self.logger.debug(
+                            f"Found object '{object_id}' with key {entity.key}"
+                        )
                     else:
-                        self.logger.debug(f"Found object '{object_id}' for '{object_name}' with key {entity.key}")
+                        self.logger.debug(
+                            f"Found object '{object_id}' for '{object_name}' with key {entity.key}"
+                        )
 
                     if entity.key in self.watched_keys:
-                        self.logger.error(f"Object id '{object_id}' already used by '{self.watched_keys[entity.key]}' cannot bind it to '{object_name}'")
+                        self.logger.error(
+                            f"Object id '{object_id}' already used by '{self.watched_keys[entity.key]}' cannot bind it to '{object_name}'"
+                        )
                     else:
                         self.watched_keys[entity.key] = object_name
 
             # Get key for fan speed
-            self._fan_speed_key = self._get_entity_key(entity_infos, self.client_params.object_ids.fan_speed)
+            self._fan_speed_key = self._get_entity_key(
+                entity_infos, self.client_params.object_ids.fan_speed
+            )
 
             # Subscribe to the state changes
             self.cli.subscribe_states(self._change_callback)
@@ -120,11 +130,13 @@ class NevermoreEspClient:
                 callback()
 
         except APIConnectionError as err:
-            print(f"Error getting initial data for {self.hostname}: {err}")
+            self.logger.error(
+                f"Error getting initial data for {self.hostname}", exc_info=err
+            )
             # Re-connection logic will trigger after this
             await self.cli.disconnect()
         except Exception as e:
-            print(e)
+            self.logger.error("Unhandled exception", exc_info=e)
 
     async def _on_disconnect(self, expected_disconnect) -> None:
         """Run disconnect stuff on API disconnect."""
@@ -140,7 +152,6 @@ class NevermoreEspClient:
         """Show connection errors."""
         self.logger.error(f"Failed to connect with error '{err}'")
 
-
     async def start(self):
         self.cli = APIClient(
             self.client_params.hostname,
@@ -148,7 +159,7 @@ class NevermoreEspClient:
             self.client_params.password,
             client_info=self.client_info,
             noise_psk=self.client_params.encryption_key,
-            keepalive= self.client_params.keep_alive
+            keepalive=self.client_params.keep_alive,
         )
 
         self.reconnect_logic = ReconnectLogic(

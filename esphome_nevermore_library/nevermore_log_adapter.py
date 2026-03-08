@@ -1,5 +1,6 @@
 import logging
 
+
 class NevermoreLogAdapter(logging.LoggerAdapter):
     def __init__(self, logger, prefix):
         super().__init__(logger)
