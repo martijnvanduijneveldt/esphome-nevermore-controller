@@ -86,6 +86,8 @@ class NevermoreEspClient:
     async def _on_connect(self) -> None:
         self.logger.info("Connected to esp")
         try:
+            self.watched_keys.clear()
+
             entity_infos, services = await self.cli.list_entities_services()
 
             # Get keys for sensors we want to listen to
