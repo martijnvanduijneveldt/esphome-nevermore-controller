@@ -17,7 +17,22 @@
 - [x] Servo control
 
 ## Config
-### nevermore controller
+
+### Minimal config
+This is the minimal config to use, see `Config details` for detailed infos.
+```
+[esphome_nevermore]
+host: clementine-filter.home
+override_id_vent_percent: vent_position__ # TODO : investigate why this doesn't match esphome id
+
+[output_pin Nevermore_vent]
+pin: esphome_nevermore:vent_servo
+pwm: True
+```
+
+### Config details
+
+#### nevermore controller
 ```
 [esphome_nevermore]
 host: clementine-filter.home
@@ -43,7 +58,7 @@ override_id_exhaust_voc: exhaust_voc
 override_id_vent_percent: vent_percent
 ```
 
-### Fan control
+#### Fan control
 Add this to be able to control the vent servo, use `esphome_nevermore` or the name of your nevermore as prefix.
 ```
 [output_pin Nevermore_vent]
