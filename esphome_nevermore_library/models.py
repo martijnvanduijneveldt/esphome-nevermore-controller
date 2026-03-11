@@ -14,7 +14,7 @@ class NevermoreEspClientObjectIdMapping(object):
     exhaust_temperature: str
     exhaust_pressure: str
     exhaust_gas: str
-    vent_servo: str
+    vent_percent: str
 
 
 @dataclass

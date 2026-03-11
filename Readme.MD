@@ -14,9 +14,10 @@
 - [x] Fan speed control
 - [x] Sensors values reporting as nevermore fan
 - [ ] Sensors values reporting as individual temps (for temp/voc plotting on graph)
-- [ ] Servo control
+- [x] Servo control
 
 ## Config
+### nevermore controller
 ```
 [esphome_nevermore]
 host: clementine-filter.home
@@ -39,6 +40,15 @@ override_id_exhaust_humidity: exhaust_humidity
 override_id_exhaust_temperature: exhaust_temperature
 override_id_exhaust_pressure: exhaust_pressure
 override_id_exhaust_voc: exhaust_voc
+override_id_vent_percent: vent_percent
+```
+
+### Fan control
+Add this to be able to control the vent servo, use `esphome_nevermore` or the name of your nevermore as prefix.
+```
+[output_pin Nevermore_vent]
+pin: esphome_nevermore:vent_servo
+pwm: True
 ```
 
 ## Not planned

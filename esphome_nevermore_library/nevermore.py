@@ -40,7 +40,7 @@ class Nevermore:
                 exhaust_temperature = config.get('override_id_exhaust_temperature', 'exhaust_temperature'),
                 exhaust_pressure = config.get('override_id_exhaust_pressure', 'exhaust_pressure'),
                 exhaust_gas = config.get('override_id_exhaust_voc', 'exhaust_voc'),
-                vent_servo = config.get('override_id_vent_servo', 'vent_servo'),
+                vent_percent= config.get('override_id_vent_percent', 'vent_percent'),
             )
         )
 

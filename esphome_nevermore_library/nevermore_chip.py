@@ -35,7 +35,7 @@ class NevermoreVentServoPin:
 
     def set_pwm(self, print_time, value):
         self.logger.debug(f"Set vent : {value}")
-        self.client.set_vent_servo(value)
+        self.client.set_vent_percent(value)
 
 class NevermoreChip:
     def __init__(self, logger:NevermoreLogAdapter, printer:Printer, name:str, client:NevermoreEspClient):
