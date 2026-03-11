@@ -10,7 +10,9 @@ from .nevermore_esp_client import NevermoreEspClient
 
 
 class NevermoreVentServoPin:
-    def __init__(self, logger: NevermoreLogAdapter, mcu: MCU, client:NevermoreEspClient):
+    def __init__(
+        self, logger: NevermoreLogAdapter, mcu: MCU, client: NevermoreEspClient
+    ):
         self.logger = logger
         self._real_mcu = mcu
         self.client = client
@@ -28,17 +30,23 @@ class NevermoreVentServoPin:
         pass
 
     def get_status(self, eventtime):
-        return {
-            'value': self._value,
-            'type': 'pwm'
-        }
+        return {"value": self._value, "type": "pwm"}
 
-    def set_pwm(self, print_time, value):
-        self.logger.debug(f"Set vent : {value}")
-        self.client.set_vent_percent(value)
+    def set_pwm(self, print_time, value: float):
+        # Received value is a float from 0 to 1
+        int_value = int(value * 100)
+        self.logger.debug(f"Set vent : {int_value}")
+        self.client.set_vent_percent(int_value)
+
 
 class NevermoreChip:
-    def __init__(self, logger:NevermoreLogAdapter, printer:Printer, name:str, client:NevermoreEspClient):
+    def __init__(
+        self,
+        logger: NevermoreLogAdapter,
+        printer: Printer,
+        name: str,
+        client: NevermoreEspClient,
+    ):
         self.logger = logger
         self._ppins = printer.lookup_object("pins")
         self._ppins.register_chip(f"{name}", self)
@@ -49,15 +57,15 @@ class NevermoreChip:
 
     def setup_pin(self, pin_type, pin_params):
         # Validate pin config
-        name = pin_params['pin']
+        name = pin_params["pin"]
 
         self.logger.info(pin_type)
         self.logger.info(pin_params)
 
-        if name != 'vent_servo':
+        if name != "vent_servo":
             raise self._ppins.error("nevermore only support `vent_servo` pin")
 
-        if pin_type != 'pwm':
+        if pin_type != "pwm":
             raise self._ppins.error("nevermore servo should have `pwm: True`")
 
         return NevermoreVentServoPin(self.logger, self._real_mcu, self._client)
