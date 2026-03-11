@@ -11,7 +11,7 @@ from .nevermore_esp_client_thread import NevermoreEspClientThread
 from .nevermore_fan import NevermoreFan
 from .nevermore_log_adapter import NevermoreLogAdapter
 from .nevermore_sensor import NevermoreSensor
-
+from .nevermore_chip import NevermoreChip
 
 class Nevermore:
     def __init__(self, config: ConfigWrapper) -> None:
@@ -40,21 +40,24 @@ class Nevermore:
                 exhaust_temperature = config.get('override_id_exhaust_temperature', 'exhaust_temperature'),
                 exhaust_pressure = config.get('override_id_exhaust_pressure', 'exhaust_pressure'),
                 exhaust_gas = config.get('override_id_exhaust_voc', 'exhaust_voc'),
+                vent_servo = config.get('override_id_vent_servo', 'vent_servo'),
             )
         )
 
         self.client_thread = NevermoreEspClientThread(self.logger, params)
 
+        self.nevermore_chip = NevermoreChip(self.logger, self.printer, self.name, self.client_thread.client)
+
         self.fan = NevermoreFan(self.printer, self.name, self.client_thread.client)
         self.nevermore_sensor = NevermoreSensor(self.logger, self.printer, self.name, self.client_thread.client)
-
-        self.logger.info("Initialized nevermore")
 
         self.printer.register_event_handler("klippy:connect", self._handle_connect)
         self.printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
         self.printer.register_event_handler(
             "gcode:request_restart", lambda t: self._handle_shutdown()
         )
+
+        self.logger.info("Initialized nevermore")
 
     def _handle_connect(self):
         self.client_thread.start()

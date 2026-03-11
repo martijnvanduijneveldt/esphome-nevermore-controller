@@ -20,6 +20,7 @@ class NevermoreEspClient:
     disconnect_callbacks: list[Callable[[], None]] = []
 
     _fan_speed_key: int = None
+    _vent_servo_key: int = None
 
     def __init__(
         self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams
@@ -35,6 +36,12 @@ class NevermoreEspClient:
     def set_fan_speed(self, speed: int):
         try:
             self.cli.number_command(self._fan_speed_key, speed)
+        except Exception as e:
+            self.logger.error("Failed to set fan speed", exc_info=e)
+
+    def set_vent_servo(self, opening: int):
+        try:
+            self.cli.number_command(self._vent_servo_key, opening)
         except Exception as e:
             self.logger.error("Failed to set fan speed", exc_info=e)
 
@@ -74,8 +81,11 @@ class NevermoreEspClient:
             self._emit_event(event_name, state.state)
 
     @staticmethod
-    def _get_entity_key(entity_infos: list[EntityInfo], object_id: str) -> int:
-        return next((x for x in entity_infos if x.object_id == object_id), None).key
+    def _get_entity_key(entity_infos: list[EntityInfo], object_id: str) -> int | None:
+        found = next((x for x in entity_infos if x.object_id == object_id), None)
+        if found is None:
+            return None
+        return found.key
 
     def on_connect(self, callback: Callable[[], None]):
         self.connect_callbacks.append(callback)
@@ -121,6 +131,10 @@ class NevermoreEspClient:
             # Get key for fan speed
             self._fan_speed_key = self._get_entity_key(
                 entity_infos, self.client_params.object_ids.fan_speed
+            )
+
+            self._vent_servo_key = self._get_entity_key(
+                entity_infos, self.client_params.object_ids.vent_servo
             )
 
             # Subscribe to the state changes

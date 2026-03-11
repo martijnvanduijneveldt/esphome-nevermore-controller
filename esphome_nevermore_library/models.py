@@ -14,6 +14,8 @@ class NevermoreEspClientObjectIdMapping(object):
     exhaust_temperature: str
     exhaust_pressure: str
     exhaust_gas: str
+    vent_servo: str
+
 
 @dataclass
 class NevermoreEspClientParams:
@@ -21,5 +23,4 @@ class NevermoreEspClientParams:
     password: Optional[str]
     encryption_key: Optional[str]
     keep_alive: float
-
     object_ids: NevermoreEspClientObjectIdMapping
