@@ -103,6 +103,8 @@ class NevermoreEspClient:
             # Get keys for sensors we want to listen to
             object_mapping = vars(self.client_params.object_ids)
 
+            failed_to_find_an_object = False
+
             for object_name, object_id in object_mapping.items():
                 entity = next(
                     (x for x in entity_infos if x.object_id == object_id), None
@@ -111,6 +113,7 @@ class NevermoreEspClient:
                     self.logger.warning(
                         f"Unable to find object '{object_id}' for '{object_name}'"
                     )
+                    failed_to_find_an_object = True
                 else:
                     if object_name == object_id:
                         self.logger.debug(
@@ -136,6 +139,12 @@ class NevermoreEspClient:
             self._vent_percent_key = self._get_entity_key(
                 entity_infos, self.client_params.object_ids.vent_percent
             )
+
+            if failed_to_find_an_object or self._fan_speed_key is None or self._vent_percent_key is None:
+                self.logger.info('Failed to find a least one object, here is the full list of object ids :')
+                for o in entity_infos:
+                    self.logger.info(f'{o.object_id}')
+
 
             # Subscribe to the state changes
             self.cli.subscribe_states(self._change_callback)
