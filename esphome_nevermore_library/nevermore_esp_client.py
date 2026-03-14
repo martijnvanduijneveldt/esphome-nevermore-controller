@@ -37,7 +37,7 @@ class NevermoreEspClient:
         self.client_info = f"{client_name} 1.0.0.1"
 
     def press_button(self, button_id: str) -> bool:
-        button_id = self.button_ids.get(button_id, None)
+        button_id = self.button_ids.get(button_id.lower(), None)
         if button_id is None:
             self.logger.error(f"Could not find a button with name {button_id}, known buttons ids are {','.join(self.button_ids.keys())}")
             return False
@@ -162,7 +162,7 @@ class NevermoreEspClient:
             # Map buttons
             for entity in entity_infos:
                 if isinstance(entity, ButtonInfo):
-                    self.button_ids[entity.object_id] = entity.key
+                    self.button_ids[entity.object_id.lower()] = entity.key
 
             # Get key for fan speed
             self._fan_speed_key = self._get_entity_key(
