@@ -59,6 +59,7 @@ host: clementine-filter.home
 # All the below options are optional, the shown values are the default values
 password:
 encryption_key:
+port: 6053
 
 enable_debug_logs: false # Warning these logs are very verbose, don't keep them unabled
 

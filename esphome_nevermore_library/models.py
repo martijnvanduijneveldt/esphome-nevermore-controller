@@ -21,6 +21,7 @@ class NevermoreEspClientObjectIdMapping(object):
 class NevermoreEspClientParams:
     hostname: str
     password: Optional[str]
+    port: int
     encryption_key: Optional[str]
     keep_alive: float
     object_ids: NevermoreEspClientObjectIdMapping

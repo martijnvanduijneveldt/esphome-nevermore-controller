@@ -141,11 +141,16 @@ class NevermoreEspClient:
                 entity_infos, self.client_params.object_ids.vent_percent
             )
 
-            if failed_to_find_an_object or self._fan_speed_key is None or self._vent_percent_key is None:
-                self.logger.info('Failed to find a least one object, here is the full list of object ids :')
+            if (
+                failed_to_find_an_object
+                or self._fan_speed_key is None
+                or self._vent_percent_key is None
+            ):
+                self.logger.info(
+                    "Failed to find a least one object, here is the full list of object ids :"
+                )
                 for o in entity_infos:
-                    self.logger.info(f'{o.object_id}')
-
+                    self.logger.info(f"{o.object_id}")
 
             # Subscribe to the state changes
             self.cli.subscribe_states(self._change_callback)
@@ -179,7 +184,7 @@ class NevermoreEspClient:
     async def start(self):
         self.cli = APIClient(
             self.client_params.hostname,
-            6053,
+            self.client_params.port,
             self.client_params.password,
             client_info=self.client_info,
             noise_psk=self.client_params.encryption_key,

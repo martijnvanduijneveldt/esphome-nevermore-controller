@@ -14,8 +14,11 @@ from .nevermore_sensor import NevermoreSensor
 from .nevermore_chip import NevermoreChip
 from .nevermore_esp_client import NevermoreEspClient
 
+
 class Nevermore:
-    def __init__(self, config: ConfigWrapper, esp_client_thread: NevermoreEspClientThread) -> None:
+    def __init__(
+        self, config: ConfigWrapper, esp_client_thread: NevermoreEspClientThread
+    ) -> None:
         self.name = config.get_name().split()[-1]
         self.printer: Printer = config.get_printer()
 
@@ -23,41 +26,55 @@ class Nevermore:
 
         self.logger = NevermoreLogAdapter(logging.getLogger(self.name), self.hostname)
 
-        enable_debug_logs = config.getboolean('enable_debug_logs', False)
+        enable_debug_logs = config.getboolean("enable_debug_logs", False)
         if enable_debug_logs:
             self.logger.setLevel(level=logging.DEBUG)
             self.logger.debug("Debug logs enabled")
 
         params = NevermoreEspClientParams(
             hostname=self.hostname,
-            password= config.get('password', None),
-            encryption_key= config.get('encryption_key', None),
+            password=config.get("password", None),
+            port=config.getint("port", 6053),
+            encryption_key=config.get("encryption_key", None),
             keep_alive=config.getfloat("esp_keepalive", 2.0, 0.1, 30),
-            object_ids= NevermoreEspClientObjectIdMapping(
-                fan_rpm=config.get('override_id_fan_rpm', 'fan_rpm'),
-                fan_speed = config.get('override_id_fan_speed', 'fan_speed'),
-                intake_humidity = config.get('override_id_intake_humidity', 'intake_humidity'),
-                intake_temperature = config.get('override_id_intake_temperature', 'intake_temperature'),
-                intake_pressure = config.get('override_id_intake_pressure', 'intake_pressure'),
-                intake_gas = config.get('override_id_intake_voc', 'intake_voc'),
-                exhaust_humidity = config.get('override_id_exhaust_humidity', 'exhaust_humidity'),
-                exhaust_temperature = config.get('override_id_exhaust_temperature', 'exhaust_temperature'),
-                exhaust_pressure = config.get('override_id_exhaust_pressure', 'exhaust_pressure'),
-                exhaust_gas = config.get('override_id_exhaust_voc', 'exhaust_voc'),
-                vent_percent= config.get('override_id_vent_percent', 'vent_percent'),
-            )
+            object_ids=NevermoreEspClientObjectIdMapping(
+                fan_rpm=config.get("override_id_fan_rpm", "fan_rpm"),
+                fan_speed=config.get("override_id_fan_speed", "fan_speed"),
+                intake_humidity=config.get(
+                    "override_id_intake_humidity", "intake_humidity"
+                ),
+                intake_temperature=config.get(
+                    "override_id_intake_temperature", "intake_temperature"
+                ),
+                intake_pressure=config.get(
+                    "override_id_intake_pressure", "intake_pressure"
+                ),
+                intake_gas=config.get("override_id_intake_voc", "intake_voc"),
+                exhaust_humidity=config.get(
+                    "override_id_exhaust_humidity", "exhaust_humidity"
+                ),
+                exhaust_temperature=config.get(
+                    "override_id_exhaust_temperature", "exhaust_temperature"
+                ),
+                exhaust_pressure=config.get(
+                    "override_id_exhaust_pressure", "exhaust_pressure"
+                ),
+                exhaust_gas=config.get("override_id_exhaust_voc", "exhaust_voc"),
+                vent_percent=config.get("override_id_vent_percent", "vent_percent"),
+            ),
         )
 
         client = NevermoreEspClient(self.logger, params)
 
         esp_client_thread.add_client(client)
 
-        self.nevermore_sensor = NevermoreSensor(self.logger, self.printer, self.name, client)
+        self.nevermore_sensor = NevermoreSensor(
+            self.logger, self.printer, self.name, client
+        )
 
-        self.nevermore_chip = NevermoreChip(self.logger, self.printer, self.name, client)
+        self.nevermore_chip = NevermoreChip(
+            self.logger, self.printer, self.name, client
+        )
         self.fan = NevermoreFan(self.printer, self.name, client)
 
-
         self.logger.info("Initialized nevermore")
-
-
