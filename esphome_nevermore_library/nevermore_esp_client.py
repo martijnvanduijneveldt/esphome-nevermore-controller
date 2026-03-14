@@ -7,6 +7,7 @@ from aioesphomeapi import (
     EntityInfo,
     EntityState,
     ReconnectLogic,
+    ButtonInfo,
 )
 
 from .models import NevermoreEspClientParams
@@ -23,6 +24,7 @@ class NevermoreEspClient:
         self.cli = None
         self.reconnect_logic = None
 
+        self.button_ids: Dict[str, int] = {}
         self.watched_keys: Dict[int, str] = {}
         self.callbacks = {}
         self.connect_callbacks: list[Callable[[], None]] = []
@@ -33,6 +35,18 @@ class NevermoreEspClient:
 
         client_name = "Esphome nevermore controller"
         self.client_info = f"{client_name} 1.0.0.1"
+
+    def press_button(self, button_id: str) -> bool:
+        button_id = self.button_ids.get(button_id, None)
+        if button_id is None:
+            self.logger.error(f"Could not find a button with name {button_id}, known buttons ids are {','.join(self.button_ids.keys())}")
+            return False
+        try:
+            self.cli.button_command(button_id)
+            return True
+        except Exception as e:
+            self.logger.error("Failed to set press button", exc_info=e)
+        return False
 
     def set_fan_speed(self, speed: int):
         try:
@@ -110,6 +124,7 @@ class NevermoreEspClient:
         self.logger.info("Connected to esp")
         try:
             self.watched_keys.clear()
+            self.button_ids.clear()
 
             entity_infos, services = await self.cli.list_entities_services()
 
@@ -143,6 +158,11 @@ class NevermoreEspClient:
                         )
                     else:
                         self.watched_keys[entity.key] = object_name
+
+            # Map buttons
+            for entity in entity_infos:
+                if isinstance(entity, ButtonInfo):
+                    self.button_ids[entity.object_id] = entity.key
 
             # Get key for fan speed
             self._fan_speed_key = self._get_entity_key(

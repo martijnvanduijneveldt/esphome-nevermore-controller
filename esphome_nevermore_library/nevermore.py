@@ -1,7 +1,10 @@
 import logging
+from typing import Optional
 
 from configfile import ConfigWrapper
+from gcode import GCodeCommand, GCodeDispatch
 from klippy import Printer
+
 from .models import (
     NevermoreEspClientObjectIdMapping,
     NevermoreEspClientParams,
@@ -76,6 +79,24 @@ class Nevermore:
         )
         self.fan = NevermoreFan(self.printer, self.name, self.client)
 
+        gcode: GCodeDispatch = self.printer.lookup_object("gcode")
+        gcode.register_mux_command(
+            "ESPHOME_NEVERMORE_PRESS_BUTTON",
+            "NEVERMORE",
+            self.name,
+            self.cmd_ESPHOME_NEVERMORE_PRESS_BUTTON,
+            desc="Simulate a button press on esphome",
+        )
+
         self.logger.info("Initialized nevermore")
 
-        self.printer.add_object(f'esphome_nevermore {self.name}', self)
+        self.printer.add_object(f"esphome_nevermore {self.name}", self)
+
+    def cmd_ESPHOME_NEVERMORE_PRESS_BUTTON(self, gcmd: GCodeCommand) -> None:
+        button_id = gcmd.get("BUTTON_ID", None)
+        if button_id is None:
+            raise gcmd.error("Error on 'ESPHOME_NEVERMORE_PRESS_BUTTON': missing BUTTON_ID")
+
+        success = self.client.press_button(button_id)
+        if not success:
+            raise gcmd.error(f"Failed to press button {button_id}, check logs")

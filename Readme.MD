@@ -13,8 +13,13 @@
 - [x] Fan speed reporting
 - [x] Fan speed control
 - [x] Sensors values reporting as nevermore fan
-- [ ] Sensors values reporting as individual temps (for temp/voc plotting on graph)
+- [x] Sensors values reporting as individual temps (for temp/voc plotting on graph)
 - [x] Servo control
+- [x] GCode command for esphome button press (set_voc_baseline)
+
+## Not planned
+- Led support
+- Screen support
 
 ## Config
 
@@ -144,9 +149,23 @@ sensor_kind: exhaust
 nevermore_name: esphome_nevermore
 ```
 
-## Not planned
-- Led support
-- Screen support
+## G-Code commands
+
+### Button press
+Basic buttons that exist are :
+- set_voc_baseline
+- sync_intake_baseline
+- restart_device
+
+To press any of these buttons simply call, replace `set_voc_baseline` with the button you want to press.
+```
+# Unnamed nevermore 
+ESPHOME_NEVERMORE_PRESS_BUTTON NEVERMORE=esphome_nevermore BUTTON_ID=set_voc_baseline
+
+# Named nevermore : clemetine
+ESPHOME_NEVERMORE_PRESS_BUTTON NEVERMORE=clementine BUTTON_ID=set_voc_baseline
+```
+
 
 ## Credits
 
