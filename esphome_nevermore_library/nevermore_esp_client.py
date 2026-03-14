@@ -52,6 +52,18 @@ class NevermoreEspClient:
     def on_fan_speed_update(self, callback: Callable[[int], None]):
         self._on_event("fan_speed", lambda object_id, value: callback(value))
 
+    def on_temp_intake_update(self, callback: Callable[[float], None]):
+        self._on_event("intake_temperature", lambda object_id, value: callback(value))
+
+    def on_temp_exhaust_update(self, callback: Callable[[float], None]):
+        self._on_event("exhaust_temperature", lambda object_id, value: callback(value))
+
+    def on_voc_intake_update(self, callback: Callable[[float], None]):
+        self._on_event("intake_gas", lambda object_id, value: callback(value))
+
+    def on_voc_exhaust_update(self, callback: Callable[[float], None]):
+        self._on_event("exhaust_gas", lambda object_id, value: callback(value))
+
     def on_temp_sensor_update(self, callback: Callable[[str, float], None]):
         self._on_event("intake_humidity", callback)
         self._on_event("exhaust_humidity", callback)

@@ -40,6 +40,7 @@ host: peach-filter.home
 pin: esphome_nevermore:vent_servo # Since peach-filter.home has no custom name, use esphome_nevermore 
 pwm: True
 
+...
 
 [esphome_nevermore clementine]
 host: clementine-filter.home
@@ -47,6 +48,28 @@ host: clementine-filter.home
 [output_pin Nevermore_vent_clementine]
 pin: clementine:vent_servo
 pwm: True
+
+## The following sensors are optional but allow to plot the values
+[temperature_sensor nevermore_Temp_intake]
+sensor_type: EspHomeNevermoreTempSensor
+sensor_kind: intake
+nevermore_name: clementine
+
+[temperature_sensor nevermore_Temp_exhaust]
+sensor_type: EspHomeNevermoreTempSensor
+sensor_kind: exhaust
+nevermore_name: clementine
+
+[temperature_sensor nevermore_VOC_intake]
+sensor_type: EspHomeNevermoreVOCSensor
+sensor_kind: intake
+nevermore_name: clementine
+
+[temperature_sensor nevermore_VOC_exhaust]
+sensor_type: EspHomeNevermoreVOCSensor
+sensor_kind: exhaust
+nevermore_name: clementine
+
 ```
 
 ### Config details
@@ -85,6 +108,40 @@ Add this to be able to control the vent servo, use `esphome_nevermore` or the na
 [output_pin Nevermore_vent]
 pin: esphome_nevermore:vent_servo
 pwm: True
+```
+
+### Temp sensor
+```cfg
+[temperature_sensor nevermore_Temp_intake]
+sensor_type: EspHomeNevermoreTempSensor
+sensor_kind: intake
+
+# Optional
+nevermore_name: clementine
+
+[temperature_sensor nevermore_Temp_exhaust]
+sensor_type: EspHomeNevermoreTempSensor
+sensor_kind: exhaust
+
+# Optional
+nevermore_name: esphome_nevermore
+```
+
+### VOC sensor
+```cfg
+[temperature_sensor nevermore_VOC_intake]
+sensor_type: EspHomeNevermoreVOCSensor
+sensor_kind: intake
+
+# Optional
+nevermore_name: clementine
+
+[temperature_sensor nevermore_VOC_exhaust]
+sensor_type: EspHomeNevermoreVOCSensor
+sensor_kind: exhaust
+
+# Optional
+nevermore_name: esphome_nevermore
 ```
 
 ## Not planned

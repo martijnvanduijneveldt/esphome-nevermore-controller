@@ -2,17 +2,16 @@ import logging
 
 from configfile import ConfigWrapper
 from klippy import Printer
-
 from .models import (
     NevermoreEspClientObjectIdMapping,
     NevermoreEspClientParams,
 )
+from .nevermore_chip import NevermoreChip
+from .nevermore_esp_client import NevermoreEspClient
 from .nevermore_esp_client_thread import NevermoreEspClientThread
 from .nevermore_fan import NevermoreFan
 from .nevermore_log_adapter import NevermoreLogAdapter
 from .nevermore_sensor import NevermoreSensor
-from .nevermore_chip import NevermoreChip
-from .nevermore_esp_client import NevermoreEspClient
 
 
 class Nevermore:
@@ -64,17 +63,19 @@ class Nevermore:
             ),
         )
 
-        client = NevermoreEspClient(self.logger, params)
+        self.client = NevermoreEspClient(self.logger, params)
 
-        esp_client_thread.add_client(client)
+        esp_client_thread.add_client(self.client)
 
         self.nevermore_sensor = NevermoreSensor(
-            self.logger, self.printer, self.name, client
+            self.logger, self.printer, self.name, self.client
         )
 
         self.nevermore_chip = NevermoreChip(
-            self.logger, self.printer, self.name, client
+            self.logger, self.printer, self.name, self.client
         )
-        self.fan = NevermoreFan(self.printer, self.name, client)
+        self.fan = NevermoreFan(self.printer, self.name, self.client)
 
         self.logger.info("Initialized nevermore")
+
+        self.printer.add_object(f'esphome_nevermore {self.name}', self)

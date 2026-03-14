@@ -1,0 +1,1 @@
+default_nevermore_name = "esphome_nevermore"
