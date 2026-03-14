@@ -15,7 +15,6 @@ class NevermoreSensor:
 
         self.state = {}
 
-
         self.min_temp = self.max_temp = 0.0
 
         self._callback: Optional[Callable[[float, float], None]] = None
@@ -30,6 +29,7 @@ class NevermoreSensor:
         self.state = {}
 
     def on_sensor_update(self, object_id,  value:float):
+        self.logger.debug(f"Sensor update received : {object_id} -> {value}")
         self.state[object_id] = value
 
     def get_status(self, event_time: float) -> Dict[str, float|None]:

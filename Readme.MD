@@ -30,6 +30,25 @@ pin: esphome_nevermore:vent_servo
 pwm: True
 ```
 
+### Multiple configs
+Here is a sample for running two nevemore on a single printer\
+```
+[esphome_nevermore]
+host: peach-filter.home
+
+[output_pin Nevermore_vent]
+pin: esphome_nevermore:vent_servo # Since peach-filter.home has no custom name, use esphome_nevermore 
+pwm: True
+
+
+[esphome_nevermore clementine]
+host: clementine-filter.home
+
+[output_pin Nevermore_vent_clementine]
+pin: clementine:vent_servo
+pwm: True
+```
+
 ### Config details
 
 #### nevermore controller
@@ -38,9 +57,10 @@ pwm: True
 host: clementine-filter.home
 
 # All the below options are optional, the shown values are the default values
-
 password:
 encryption_key:
+
+enable_debug_logs: false # Warning these logs are very verbose, don't keep them unabled
 
 keepalive: 2.0  # esphome has a default timeout ratio of 4.5, so after keep_alive*4.5 esp will be considered as disconnected 
 

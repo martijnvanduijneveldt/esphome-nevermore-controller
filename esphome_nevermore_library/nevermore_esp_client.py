@@ -14,14 +14,6 @@ from .nevermore_log_adapter import NevermoreLogAdapter
 
 
 class NevermoreEspClient:
-    watched_keys: Dict[int, str] = {}
-    callbacks = {}
-    connect_callbacks: list[Callable[[], None]] = []
-    disconnect_callbacks: list[Callable[[], None]] = []
-
-    _fan_speed_key: int = None
-    _vent_percent_key: int = None
-
     def __init__(
         self, logger: NevermoreLogAdapter, client_params: NevermoreEspClientParams
     ):
@@ -30,6 +22,15 @@ class NevermoreEspClient:
         self.logger = logger
         self.cli = None
         self.reconnect_logic = None
+
+        self.watched_keys: Dict[int, str] = {}
+        self.callbacks = {}
+        self.connect_callbacks: list[Callable[[], None]] = []
+        self.disconnect_callbacks: list[Callable[[], None]] = []
+
+        self._fan_speed_key: int = None
+        self._vent_percent_key: int = None
+
         client_name = "Esphome nevermore controller"
         self.client_info = f"{client_name} 1.0.0.1"
 
