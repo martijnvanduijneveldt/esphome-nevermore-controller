@@ -232,7 +232,7 @@ class NevermoreEspClient:
 
         await self.reconnect_logic.start()
 
-    async def disconnect(self):
-        self.logger.debug(f"Disconnecting client {self.hostname}")
+    async def stop(self):
+        self.logger.debug(f"Stopped client")
         await self.reconnect_logic.stop()
         await self.cli.disconnect()

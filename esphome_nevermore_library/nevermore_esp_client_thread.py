@@ -17,14 +17,15 @@ class NevermoreEspClientThread:
 
         printer.register_event_handler("klippy:connect", self._handle_connect)
         printer.register_event_handler("klippy:shutdown", self._handle_shutdown)
-        printer.register_event_handler(
-            "gcode:request_restart", lambda t: self._handle_shutdown()
-        )
+        printer.register_event_handler("gcode:request_restart", self._handle_request_restart)
 
     def _handle_connect(self):
         self._start()
 
     def _handle_shutdown(self):
+        self._stop()
+    
+    def _handle_request_restart(self, print_time):
         self._stop()
 
     def add_client(self, client: NevermoreEspClient):
@@ -34,19 +35,25 @@ class NevermoreEspClientThread:
         self._global_logger.debug("Background thread started")
         self.thread.start()
 
-    def _stop(self):
+    async def _stop(self):
         self._global_logger.debug("Background thread stop received")
         self._disconnect.set()
         self.thread.join()
 
-    async def start_clients(self):
+    async def _start_clients(self):
+        self._global_logger.debug(f"Background thread starting {len(self._clients)} clients")
         for client in self._clients:
             await client.start()
 
+    async def _stop_clients(self):
+        self._global_logger.debug(f"Background thread stopping {len(self._clients)} clients")
+        for client in self._clients:
+            await client.stop()
+
     async def thread_loop(self, loop):
-        loop.create_task(self.start_clients())
+        loop.create_task(self._start_clients())
         await self._disconnect.wait()
-        await self.client.disconnect()
+        await self._stop_clients()
 
     def _init_thread(self):
         loop = asyncio.new_event_loop()
